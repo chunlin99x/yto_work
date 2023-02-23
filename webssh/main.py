@@ -12,7 +12,7 @@ from settings import (
     get_ssl_context, get_server_settings, check_encoding_setting
 )
 from  worker import clients
-
+from  sftp_handle import  FileUploadHandler,FileDownloadHandler,FileListHandler,FolderCreateHandler
 
 def make_handlers(loop, options):
     host_keys_settings = get_host_keys_settings(options)
@@ -22,6 +22,10 @@ def make_handlers(loop, options):
         (r'/ci_webssh/', IndexHandler, dict(loop=loop, policy=policy,
                                   host_keys_settings=host_keys_settings)),
         (r'/ci_webssh/ws', WsockHandler, dict(loop=loop))
+        (r"/ci_webssh/file_upload", FileUploadHandler),
+        (r"/ci_webssh/file_download/(?P<file_path>.*)", FileDownloadHandler),
+        (r"/ci_webssh/file_list", FileListHandler),
+        (r"/ci_webssh/folder_create", FolderCreateHandler),
     ]
     return handlers
 

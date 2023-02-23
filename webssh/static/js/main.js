@@ -839,6 +839,215 @@ jQuery(function($){
   // console.log(url_form_data);
   // console.log(url_opts_data);
 
+
+
+
+
+  function go_to_path(path){
+    //url = "/file_list?host="+hostname+"&username="+username+"&path="+path
+    url = "/file_list"
+    // 发送ajax
+     $.ajax({
+        url: url,
+        type: 'get',
+        data:{
+          host:url_form_data.hostname,
+          username:url_form_data.username,
+          path:path
+        },
+        dataType: "json",
+        success:render_file_list
+    });
+  }
+
+
+
+  // 为窗体添加事件
+  $('#exampleModal').on('show.bs.modal', function (event) {
+    path = "/"
+    go_to_path(path)
+  })
+
+  file_svg = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-files" viewBox="0 0 16 16">\n' +
+      '  <path d="M13 0H6a2 2 0 0 0-2 2 2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h7a2 2 0 0 0 2-2 2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm0 13V4a2 2 0 0 0-2-2H5a1 1 0 0 1 1-1h7a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1zM3 4a1 1 0 0 1 1-1h7a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4z"/>\n' +
+      '</svg>'
+  dir_svg = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-folder" viewBox="0 0 16 16">\n' +
+      '  <path d="M.54 3.87.5 3a2 2 0 0 1 2-2h3.672a2 2 0 0 1 1.414.586l.828.828A2 2 0 0 0 9.828 3h3.982a2 2 0 0 1 1.992 2.181l-.637 7A2 2 0 0 1 13.174 14H2.826a2 2 0 0 1-1.991-1.819l-.637-7a1.99 1.99 0 0 1 .342-1.31zM2.19 4a1 1 0 0 0-.996 1.09l.637 7a1 1 0 0 0 .995.91h10.348a1 1 0 0 0 .995-.91l.637-7A1 1 0 0 0 13.81 4H2.19zm4.69-1.707A1 1 0 0 0 6.172 2H2.5a1 1 0 0 0-1 .981l.006.139C1.72 3.042 1.95 3 2.19 3h5.396l-.707-.707z"/>\n' +
+      '</svg>'
+
+
+
+  function render_file_list(data) {
+    if(data.code==0){
+      $("#file_list_box").html("")
+
+      html = ""
+      files = data.data.files
+      input_path = data.data.path
+      $("#current_path").val(input_path)
+      for(var f of files ){
+            html += "<tr>"
+          if(f.is_dir){
+              html += '<td class="text-info display-5">'+dir_svg +" "+f.filename+'</td>'
+          }else {
+              html += '<td class="text-danger display-5">'+file_svg+" "+f.filename+'</td>'
+          }
+          html += '<td>'+f.mod+'</td>'
+          html += '<td> <small>'+f.m+"."+f.d+"."+f.time+'</small></td>'
+          html += '<td> <small>'+f.size+'k </small></td>'
+          if (input_path == "/"){
+            input_path = ""
+          }
+
+
+            if(f.is_dir){
+                html += '<td><a  href="javascript:void(0)" path="'+input_path+"/"+f.filename+'" class="btn  pad0 btn-link text-info go-to-path" role="button"> 进入</a></td>'
+            }else {
+              if (f.mod.indexOf("l")==-1){
+                html += '<td><a  href="javascript:void(0)" path="'+input_path+"/"+f.filename+'" class="btn  pad0 btn-link text-danger download" role="button"> 下载</a></td>'
+              }else {
+                html += '<td><a  href="#" class="btn disabled pad0 btn-link" role="button"> 下载</a></td>'
+              }
+            }
+
+            html += "</tr>"
+      }
+       $("#file_list_box").html(html)
+    }
+    else {
+      alert_message(data.error)
+    }
+
+  }
+
+
+  function alert_message(message){
+    html = ' <div class="alert alert-warning alert-dismissible fade show " role="alert" >\n' +
+        '                      <strong>提示!</strong> '+message+'\n' +
+        '              <button type="button" class="close" data-dismiss="alert" aria-label="Close">\n' +
+        '                <span aria-hidden="true">&times;</span>\n' +
+        '              </button>\n' +
+        '            </div>'
+    $("#alert_error").html("")
+    $("#alert_error").html(html)
+
+  }
+
+  $("#exampleModal").on("click",".go-to-path",function (e){
+          target  = $(e.target)
+          path = target.attr("path")
+          go_to_path(path)
+  })
+  $("#exampleModal").on("click",".download",function (e){
+          target  = $(e.target)
+          filepath = target.attr("path")
+    window.location.href = "/file_download/"+filepath+"?host="+url_form_data.hostname+"&username="+url_form_data.username
+  })
+
+
+  $("#fun_goback").click(fun_goback)
+
+  $("#fun_entry").click(function (){
+    input_path = $("#current_path").val()
+     go_to_path(input_path)
+  })
+
+  function fun_goback(){
+    input_path = $("#current_path").val()
+    if (input_path=="/"){
+      alert_message("当前在根目录,不能返回上一级")
+    }else {
+      go_to_path(input_path+"/../")
+    }
+  }
+
+  $("#btn_upload").click(function () {
+    input_path = $("#current_path").val()
+
+    file_obj = $("#customFile")[0]
+    //上传文件
+    if (file_obj.files.length == 0){
+        alert_message("没有选择文件,请先选择。")
+        return
+    }
+      var fd = new FormData()
+    file = file_obj.files[0]
+      fd.append('file',file)
+      $.ajax({
+          type:"post",
+          url:"/file_upload?host="+url_form_data.hostname+"&username="+url_form_data.username+"&path="+input_path,
+          data: fd,
+          dataType: "json",
+          processData: false,
+          contentType: false,
+          success: function(res) {
+            code = res.code
+            if(code==1){
+                alert_message(res.error)
+            }else {
+              input_path = $("#current_path").val()
+              go_to_path(input_path)
+            }
+
+          }
+
+
+      })
+
+
+
+  })
+
+  $('#addfolderModal').on('hidden.bs.modal', function (event) {
+     // 清空
+      $("#folder_name").val("")
+    })
+  $("#add_folder_btn").click(function (){
+    folder_name = $("#folder_name").val()
+    if (folder_name==""){
+      $('#addfolderModal').modal('hide')
+      alert_message("文件夹名称不能为空.")
+    }else {
+      input_path = $("#current_path").val()
+      url = "/folder_create"
+    // 发送ajax
+     $.ajax({
+        url: url,
+        type: 'get',
+        data:{
+          host:url_form_data.hostname,
+          username:url_form_data.username,
+          path:input_path,
+          folder:folder_name,
+
+        },
+        dataType: "json",
+        success:add_folder_callback
+    });
+
+    }
+
+  })
+
+
+  function add_folder_callback(res){
+     $('#addfolderModal').modal('hide')
+    code = res.code
+    if(code==1){
+        alert_message(res.error)
+    }else {
+      input_path = $("#current_path").val()
+      go_to_path(input_path)
+    }
+
+  }
+
+
+
+
+
+
+
   if (url_opts_data.term) {
     term_type.val(url_opts_data.term);
   }
