@@ -1,0 +1,38 @@
+# See https://help.github.com/ignore-files/ for more about ignoring files.
+*/test.py
+*.pyc
+
+# dependencies
+*/node_modules
+
+# testing
+/coverage
+
+# misc
+.idea/
+.DS_Store
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+__pycache__/
+.vscode
+
+# Python:
+*.py[cod]
+*.so
+*.egg
+*.egg-info
+*.js.map
+*.css.map
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+packages/*
+*.log
+*.lock
+*.db
+/venv
+
+*/test
