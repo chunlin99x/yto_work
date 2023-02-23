@@ -21,7 +21,7 @@ def make_handlers(loop, options):
     handlers = [
         (r'/ci_webssh/', IndexHandler, dict(loop=loop, policy=policy,
                                   host_keys_settings=host_keys_settings)),
-        (r'/ci_webssh/ws', WsockHandler, dict(loop=loop))
+        (r'/ci_webssh/ws', WsockHandler, dict(loop=loop)),
         (r"/ci_webssh/file_upload", FileUploadHandler),
         (r"/ci_webssh/file_download/(?P<file_path>.*)", FileDownloadHandler),
         (r"/ci_webssh/file_list", FileListHandler),

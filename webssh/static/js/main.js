@@ -845,7 +845,7 @@ jQuery(function($){
 
   function go_to_path(path){
     //url = "/file_list?host="+hostname+"&username="+username+"&path="+path
-    url = "/file_list"
+    url = "/ci_webssh/file_list"
     // 发送ajax
      $.ajax({
         url: url,
@@ -941,7 +941,7 @@ jQuery(function($){
   $("#exampleModal").on("click",".download",function (e){
           target  = $(e.target)
           filepath = target.attr("path")
-    window.location.href = "/file_download/"+filepath+"?host="+url_form_data.hostname+"&username="+url_form_data.username
+    window.location.href = "/ci_webssh/file_download/"+filepath+"?host="+url_form_data.hostname+"&username="+url_form_data.username
   })
 
 
@@ -975,7 +975,7 @@ jQuery(function($){
       fd.append('file',file)
       $.ajax({
           type:"post",
-          url:"/file_upload?host="+url_form_data.hostname+"&username="+url_form_data.username+"&path="+input_path,
+          url:"/ci_webssh/file_upload?host="+url_form_data.hostname+"&username="+url_form_data.username+"&path="+input_path,
           data: fd,
           dataType: "json",
           processData: false,
@@ -1009,7 +1009,7 @@ jQuery(function($){
       alert_message("文件夹名称不能为空.")
     }else {
       input_path = $("#current_path").val()
-      url = "/folder_create"
+      url = "/ci_webssh/folder_create"
     // 发送ajax
      $.ajax({
         url: url,
