@@ -36,6 +36,7 @@ var wssh = {};
 
 
 jQuery(function($){
+  bsCustomFileInput.init()
   var status = $('#status'),
       button = $('.btn-primary'),
       form_container = $('.form-container'),
@@ -990,6 +991,8 @@ jQuery(function($){
               input_path = $("#current_path").val()
               go_to_path(input_path)
             }
+            // 清空文件选择框中的文件
+            $("#resetfile")[0].reset()
 
           }
 
