@@ -526,6 +526,8 @@ jQuery(function($){
     });
 
     sock.onopen = function() {
+      // 打开term 时候 显示文件助手
+      $(".fix-right-btn").show()
       term.open(terminal);
       toggle_fullscreen(term);
       update_font_family(term);
