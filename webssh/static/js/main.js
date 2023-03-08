@@ -867,7 +867,7 @@ jQuery(function($){
 
   // 为窗体添加事件
   $('#exampleModal').on('show.bs.modal', function (event) {
-    path = "/"
+    path = "~"
     go_to_path(path)
   })
 
@@ -983,11 +983,29 @@ jQuery(function($){
           dataType: "json",
           processData: false,
           contentType: false,
+          beforeSend:function (res) {
+              $("#progress").show()
+              var progressRate = 0
+              interval = setInterval(function () {
+                if (progressRate < 90){
+                   progressRate += 5
+                }else {
+                  $("#progress-text").html("上传已经完成,正在拷贝至目标服务器,请稍后")
+                }
+                $("#progress-bar").css("width",progressRate+"%")
+              },1000)
+
+          },
+          complete:function (){
+              clearInterval(interval)
+              $("#progress").hide()
+          },
           success: function(res) {
             code = res.code
             if(code==1){
                 alert_message(res.error)
             }else {
+              $("#progress-bar").css("width","100%")
               input_path = $("#current_path").val()
               go_to_path(input_path)
             }

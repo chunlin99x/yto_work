@@ -145,6 +145,15 @@ class FileDownloadHandler(tornado.web.RequestHandler):
                 self.write(json.dumps(ret))
 
 
+from enum import Enum
+
+
+# 继承枚举类
+class FileSizeEnum(Enum):
+    KB = 1024
+    MB = 1024 * 1024
+    GB = 1024 * 1024 * 1024
+
 
 
 class FileListHandler(tornado.web.RequestHandler):
@@ -155,7 +164,7 @@ class FileListHandler(tornado.web.RequestHandler):
         try:
             host = self.get_argument('host')
             username = self.get_argument('username')
-            path = self.get_argument('path',"/")
+            path = self.get_argument('path',"~")
 
             if not all([host, username,path]):
                 self.write(json.dumps({"code": 1, "error": "参数错误host,username,path"}))
@@ -168,6 +177,11 @@ class FileListHandler(tornado.web.RequestHandler):
                 self.write(json.dumps({"code": 1, "error": "cmdb中不存在密码"}))
                 return
             sftp_client = SFTP(host, 22, username, password=reps["pwd"])
+            if path == "~":
+                if username == "root":
+                    path = "/root"
+                else:
+                    path = f"/home/{username}"
             file_attr_list = sftp_client.sftp.listdir_attr(path)
             file_list = []
             keys = ["mod","file_count","group","owner","size","m","d","time","filename"]
